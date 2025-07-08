@@ -21,6 +21,10 @@
 
 (print (fibonacci-iter 10))
 
+(let ((input (read-from-minibuffer "")))
+  (princ (concat "You said: " input))
+  (terpri)) ; newline
+
 (provide 'main)
 
 ;;; main.el ends here

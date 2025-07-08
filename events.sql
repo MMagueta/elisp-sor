@@ -41,14 +41,13 @@ VOLATILE;
 CREATE OR REPLACE PROCEDURE message_store.transact(
   category text,
   object_id text,
-  "type" text,
-  data bytea
+  "types" text[],
+  event_content bytea[]
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
   PERFORM message_store.acquire_lock(category);
-
   INSERT INTO message_store.messages
     (
       category,
@@ -56,13 +55,11 @@ BEGIN
       type,
       data
     )
-  VALUES
-    (
-      category,
-      object_id,
-      type,
-      data
-    );
-
+  SELECT
+    category,
+    object_id,
+    type,
+    event as data
+  FROM unnest(event_content, "types") AS t(event, type);
 END;
 $$;
